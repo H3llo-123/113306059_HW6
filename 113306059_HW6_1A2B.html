@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #result {
+            margin-top: 20px;
+        }
+        #recordList {
+            list-style-type: none;
+            padding: 0;
+        }
+    </style>
+	</head>
+	<body>
+		<h1>113306059_HW6_1A2B</h1>
+	    <input type="text" id="guessInput" maxlength="4" placeholder="請輸入4個不重複的數字">
+	    <button onclick="submitGuess()">猜!</button>
+	    <p id="message"></p>
+	    <div id="result">
+	        <h3>遊戲紀錄：</h3>
+	        <ul id="recordList"></ul>
+	    </div>
+		<script>
+			let answer = generateRandomNumber();
+			let attempts = 0;
+
+			function generateRandomNumber() {
+			    const digits = Array.from({ length: 10 }, (_, i) => i);
+			    const result = [];
+			    for (let i = 0; i < 4; i++) {
+			        const randomIndex = Math.floor(Math.random() * digits.length);
+			        result.push(digits[randomIndex]);
+			        digits.splice(randomIndex, 1);
+			    }
+			    return result;
+			}
+
+			function submitGuess() {
+			    const inputField = document.getElementById("guessInput");
+			    const guess = inputField.value.trim();
+			    const message = document.getElementById("message");
+			    const recordList = document.getElementById("recordList");
+			    message.textContent = "";
+
+			    if (!/^\d{4}$/.test(guess)) {
+			        alert("請輸入四個數字！");
+			        return;
+			    }
+
+			    const guessArray = guess.split("");
+			    if (new Set(guessArray).size !== 4) {
+			        alert("數字不能重複！");
+			        return;
+			    }
+
+			    attempts++;
+			    const [a, b] = calculateAB(guessArray, answer);
+			    const resultText = `第${attempts}次：${guess}⭢${a}A${b}B`;
+			    recordList.innerHTML += `<li>${resultText}</li>`;
+
+			    if (a === 4) {
+			        alert(`答對了！總共作答次數：${attempts}`);
+			        inputField.value = "";
+			        resetGame();
+			    } else {
+			        inputField.value = "";
+			    }
+			}
+
+			function calculateAB(guessArray, answerArray) {
+			    let a = 0;
+			    let b = 0;
+
+			    guessArray.forEach((digit, index) => {
+			        if (digit == answerArray[index]) {
+			            a++;
+			        } else if (answerArray.includes(Number(digit))) {
+			            b++;
+			        }
+			    });
+
+			    return [a, b];
+			}
+
+			function resetGame() {
+			    answer = generateRandomNumber();
+			    attempts = 0;
+			    document.getElementById("recordList").innerHTML = "";
+			}
+		</script>
+	</body>
+</html>
